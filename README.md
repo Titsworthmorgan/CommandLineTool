@@ -19,8 +19,8 @@ After compilation, navigate to the `output` directory and run the executable wit
 ` ./t.exe [options] `
 
 ### Available Options:
-- `-h` or `--help`: Displays help information about the tool.
+- `-h`: Displays help information about the tool.
 - `-c`: outputs number of bytes in a file
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
-- `-f <filename>`: specifies the input file to be processed
+<!-- - `-f <filename>`: specifies the input file to be processed -->
