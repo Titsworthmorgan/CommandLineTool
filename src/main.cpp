@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <cstring>
 using namespace std;
+
+// yes I want these lowercase
 enum CommandLineOptions
 {
     h, // help
@@ -18,11 +20,11 @@ enum CommandLineOptions
 
 int main(int argc, char* argv[])
 {
-    int offset = 1; // offset to get to the argument value
     ifstream inFile;
-    for (int i = 1; i < argc; ++i)
+    // post increment, we are potentially skipping an element by using an offset.
+    for (int i = 1; i < argc; i++)
     {
-        if (*argv[i] == '-') // if option flag given
+        if (*argv[i] == '-') // Capture option flags
         {
             char option = tolower(argv[i][1]); // force to lowercase
             switch (option)
@@ -33,7 +35,7 @@ int main(int argc, char* argv[])
                 break;
             case 'c':
                 // 1. open file at given path
-                inFile.open(argv[i + offset]);
+                inFile.open(argv[i + 1]);
 
                 // 2. check if it opened correctly
                 if (!inFile) {
@@ -43,7 +45,7 @@ int main(int argc, char* argv[])
                     cerr << strerror(errno) << endl;
 
                     // output error 
-                    cerr << "Invalid file path: " << argv[i + offset] << endl;
+                    cerr << "Invalid file path: " << argv[i + 1] << endl;
 
                     cerr.clear(); // clear error state
                     return 1; // exit with error code
@@ -68,11 +70,11 @@ int main(int argc, char* argv[])
                 break;
             case 'l':
                 // same steps as above, we are outputting and int.
-                inFile.open(argv[i + offset]);
+                inFile.open(argv[i + 1]);
                 if (!inFile) {
                     cerr << strerror(errno) << endl;
                     // output error 
-                    cerr << "Invalid file path: " << argv[i + offset] << endl;
+                    cerr << "Invalid file path: " << argv[i + 1] << endl;
                     cerr.clear(); // clear error state
                     return 1; // exit with error code
                 }
@@ -94,16 +96,13 @@ int main(int argc, char* argv[])
                 // cout << oss.str(); // debug
                 break;
             }
-            i += offset; // skip next argument as it's a value
-            // oss.str(""); // clear the stringstream for next use
-            // oss.clear(); // clear any error flags
+            i += 1; // skip next argument as it's a value
         }
         else
         {
             cout << "Non-option argument: " << argv[i] << endl;
             // oss << string(argv[i]) << endl;
         }
-
     }
     return 0;
 }
