@@ -18,7 +18,7 @@ enum CommandLineOptions
     w, // count words
 };
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     ifstream inFile;
     // post increment, we are potentially skipping an element by using an offset.
@@ -29,73 +29,95 @@ int main(int argc, char* argv[])
             char option = tolower(argv[i][1]); // force to lowercase
             switch (option)
             {
-            case 'h':
-                displayHelp();
-                clearOss();
-                break;
-            case 'c':
-                // 1. open file at given path
-                inFile.open(argv[i + 1]);
-
-                // 2. check if it opened correctly
-                if (!inFile) {
-                    // output error message from errno
-                    // Thank god this exists. 
-                    // I did NOT want to make my own error table with function calls for each one lol
-                    cerr << strerror(errno) << endl;
-
-                    // output error 
-                    cerr << "Invalid file path: " << argv[i + 1] << endl;
-
-                    cerr.clear(); // clear error state
-                    return 1; // exit with error code
-                    // TODO: Find some sort of test cases for this.
+                case 'h':
+                {
+                    displayHelp();
+                    clearOss();
+                    break;
                 }
+                case 'c':
+                {
+                    // 1. open file at given path
+                    inFile.open(argv[i + 1]);
 
-                // 3. variable to hold byte count, I wanted this inline but... I guess you can't
-                // and I want to potentially do multiple operations later
-                int byteCount;
+                    // 2. check if it opened correctly
+                    if (!inFile)
+                    {
+                        // output error message from errno
+                        // Thank god this exists.
+                        // I did NOT want to make my own error table with function calls for each one lol
+                        cerr << strerror(errno) << endl;
 
-                // 4. Call relevant function (here it's countBytes for returning int byte count)
-                byteCount = countBytes(inFile);
+                        // output error
+                        cerr << "Invalid file path: " << argv[i + 1] << endl;
 
-                // 5. output result
-                cout << "Byte count: " << byteCount << endl;
+                        cerr.clear(); // clear error state
+                        return 1;     // exit with error code
+                        // TODO: Find some sort of test cases for this.
+                    }
 
-                // 6. close file
-                inFile.close();
+                    // 3. variable to hold byte count, I wanted this inline but... I guess you can't
+                    // and I want to potentially do multiple operations later
+                    int byteCount;
 
-                // return number of bytes as output for potential scripting use?
-                // return byteCount;
-                break;
-            case 'l':
-                // same steps as above, we are outputting and int.
-                inFile.open(argv[i + 1]);
-                if (!inFile) {
-                    cerr << strerror(errno) << endl;
-                    // output error 
-                    cerr << "Invalid file path: " << argv[i + 1] << endl;
-                    cerr.clear(); // clear error state
-                    return 1; // exit with error code
+                    // 4. Call relevant function (here it's countBytes for returning int byte count)
+                    byteCount = countBytes(inFile);
+
+                    // 5. output result
+                    cout << "Byte count: " << byteCount << endl;
+
+                    // 6. close file
+                    inFile.close();
+
+                    // return number of bytes as output for potential scripting use?
+                    // return byteCount;
+                    break;
                 }
-                int lineCount;
-                lineCount = countLines(inFile);
-                cout << "Line count: " << lineCount << endl;
-                inFile.close();
-                break;
-            case 'w':
-                // count words
-                cout << "Count words option selected." << endl;
-                // oss << string(argv[i + offset]) << endl;
-                // cout << oss.str(); // debug
-                break;
-            default:
+                case 'l':
+                {
+                    // same steps as above, we are outputting and int.
+                    inFile.open(argv[i + 1]);
+                    if (!inFile)
+                    {
+                        cerr << strerror(errno) << endl;
+                        // output error
+                        cerr << "Invalid file path: " << argv[i + 1] << endl;
+                        cerr.clear(); // clear error state
+                        return 1;     // exit with error code
+                    }
+                    int lineCount;
+                    lineCount = countLines(inFile);
+                    cout << "Line count: " << lineCount << endl;
+                    inFile.close();
+                    break;
+                }
+                case 'w':
+                {
+                    // same steps
+                    inFile.open(argv[i + 1]);
+                    if (!inFile)
+                    {
+                        cerr << strerror(errno) << endl;
+                        // output error
+                        cerr << "Invalid file path: " << argv[i + 1] << endl;
+                        cerr.clear(); // clear error state
+                        return 1;     // exit with error code
+                    }
+                    int wordCount;
+                    wordCount = countWords(inFile);
+                    cout << "Word count: " << wordCount << endl;
+                    inFile.close();
+                    break;
+                }
+                default:
+            {
                 // unknown option
                 cout << "Unknown option: " << option << endl;
                 // oss << string(argv[i + offset]) << endl;
                 // cout << oss.str(); // debug
                 break;
             }
+            } // end switch
             i += 1; // skip next argument as it's a value
         }
         else

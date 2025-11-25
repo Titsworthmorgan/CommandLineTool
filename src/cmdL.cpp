@@ -24,7 +24,7 @@ string displayHelp()
 int countBytes(ifstream &inFile)
 {
     // clear any eof flags
-    inFile.clear(); 
+    inFile.clear();
 
     // skip to end
     inFile.seekg(0, ios::end);
