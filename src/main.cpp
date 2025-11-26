@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
             {
                 // open both files this time
                 ifstream file1;
-                ifstream file2;
+                ofstream file2;
                 file1.open(argv[i + 1]);
                 file2.open(argv[i + 2]);
                 if (!file1)
@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
                 file1.close();
                 file2.close();
                 i += 1; // increment an additional time as we used two file paths
-                // I want to
                 break;
             }
             default:

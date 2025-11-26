@@ -4,6 +4,8 @@
 #include <numeric>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <map>
 #include "cmdL.hpp"
 using namespace std;
 ostringstream oss;
@@ -83,14 +85,63 @@ int countWords(ifstream &inFile)
     return wordCount;
 }
 
-string parseJsonFiles(ifstream &file1, ifstream &file2)
+enum class TokenType {
+    LEFT_BRACE, RIGHT_BRACE,
+    LEFT_BRACKET, RIGHT_BRACKET,
+    COLON, COMMA,
+    STRING, NUMBER,
+    END_OF_FILE,
+    UNKNOWN
+};
+
+struct Token {
+    TokenType type;
+    std::string value;
+};
+
+enum class valueType {
+    STRING,
+    NUMBER,
+    OBJECT,
+    ARRAY,
+    NONE
+};
+
+struct JSONValue {
+    valueType type;
+    std::string stringValue;
+    std::vector<JSONValue> arrayValue;
+    std::map<std::string, JSONValue> objectValue;
+};
+
+class Tokenizer
 {
-    // Placeholder function for JSON parsing between two files
-    // Actual implementation would depend on the specific requirements and JSON library used
-    oss << "JSON parsing between two files is not yet implemented." << endl;
+    private: 
+    public:
+};
+
+class Parser
+{
+    private:
+    public:
+};
+
+string parseJsonFiles(ifstream &file1, ofstream &file2)
+{
+    // Placeholder implementation
+    oss << "JSON parsing not yet implemented.\n";
     cout << oss.str();
     return oss.str();
+    // maybe use classes for tokenizer and parser?
+    // or could I use a series of functions?
+    // Note for later
+    // What might work best is to have the tokenizer class produce a vector of tokens
+    // Then have the parser class take that vector and produce a JSONValue object
+    // Finally have a function that takes a JSONValue object and serializes it to the output file
+    // This would separate concerns nicely
+    // This should work.
 }
+
 void clearOss()
 {
     oss.str(""); // clear the stringstream
