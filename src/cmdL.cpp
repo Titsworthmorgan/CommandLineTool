@@ -60,7 +60,8 @@ int countLines(ifstream &inFile)
 int countWords(ifstream &inFile)
 {
     // word variable to hold each word
-    // this will be delimited by whitespace by default
+    // this will be delimited by whitespace by default.
+    // really we're just taking advantage of the stream extraction operator here and its default behavior.
     string word;
 
     // counter
@@ -82,6 +83,14 @@ int countWords(ifstream &inFile)
     return wordCount;
 }
 
+string parseJsonFiles(ifstream &file1, ifstream &file2)
+{
+    // Placeholder function for JSON parsing between two files
+    // Actual implementation would depend on the specific requirements and JSON library used
+    oss << "JSON parsing between two files is not yet implemented." << endl;
+    cout << oss.str();
+    return oss.str();
+}
 void clearOss()
 {
     oss.str(""); // clear the stringstream

@@ -7,5 +7,6 @@ string displayHelp();
 int countBytes(ifstream &inFile);
 int countLines(ifstream &inFile);
 int countWords(ifstream &inFile);
+string parseJsonFiles(ifstream &file1, ifstream &file2);
 void clearOss();
 #endif // CMDL_HPP
