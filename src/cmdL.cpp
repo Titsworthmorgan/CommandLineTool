@@ -57,6 +57,31 @@ int countLines(ifstream &inFile)
     return lineCount;
 }
 
+int countWords(ifstream &inFile)
+{
+    // word variable to hold each word
+    // this will be delimited by whitespace by default
+    string word;
+
+    // counter
+    int wordCount = 0;
+
+    // clear any eof flags
+    inFile.clear();
+
+    // seek to beginning
+    inFile.seekg(0, ios::beg);
+
+    // while word exists, increment count
+    while (inFile >> word)
+    {
+        wordCount++;
+    }
+
+    // return count
+    return wordCount;
+}
+
 void clearOss()
 {
     oss.str(""); // clear the stringstream
