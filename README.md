@@ -31,5 +31,4 @@ To use the command line tool, run the executable with the desired options. Below
 - `-c`: outputs number of bytes in a file
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
-- `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix
-<!-- - `-f <filename>`: specifies the input file to be processed, potentially specifying multiple -->
+- `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix - works... mostly. 

@@ -120,6 +120,7 @@ int main(int argc, char *argv[]) {
                         cerr.clear();
                         return 1;
                     }
+                    // call parsing function
                     try {
                         parseAndWriteJsonFiles(file1, file2);
                     } catch (const runtime_error &e) {
@@ -141,7 +142,6 @@ int main(int argc, char *argv[]) {
             i += 1; // skip next argument as it's a value
         } else {
             cout << "Non-option argument: " << argv[i] << endl;
-            // oss << string(argv[i]) << endl;
         }
     }
     return 0;
