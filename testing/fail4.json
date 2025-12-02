@@ -1,0 +1,7 @@
+{
+  // This is a comment
+  "name": "test",
+  /* Multi-line
+     comment */
+  "value": 42
+}
