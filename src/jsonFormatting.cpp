@@ -127,14 +127,20 @@ void Parser::parseValue() {
         // primitive value
         advance();
     } else {
-        // angry
-        throw runtime_error("Expected a value");
+        if (currentToken.value == "undefined" || currentToken.value == "NaN" || currentToken.value == "Infinity") {
+            throw runtime_error("Invalid value in JSON: " + currentToken.value);
+        }
+        throw runtime_error("Expected a value, got: " + currentToken.value + " instead");
     }
 }
 
 void Parser::parseObject() {
     // expect left bracket '{'
     expect(Tokenizer::TokenType::LEFT_BRACKET, "Expected '{'");
+
+    if (currentToken.value == "/" || currentToken.value == "*") {
+        throw runtime_error("Comments are not allowed in JSON");
+    }
     // check for empty object
     if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
         // empty object
@@ -147,13 +153,11 @@ void Parser::parseObject() {
     while (true) {
         // Parse key (must be a string)
         tokens.push_back(currentToken);
-        // if not a string, get mad
+        // if not a string
         expect(Tokenizer::TokenType::STRING, "Expected string key in object");
-
         // Parse colon ':'
         tokens.push_back(currentToken);
         expect(Tokenizer::TokenType::COLON, "Expected ':' after object key");
-
         // Parse value again, must be a valid JSON value if we got here
         parseValue();
 
@@ -170,14 +174,14 @@ void Parser::parseObject() {
             tokens.push_back(currentToken);
             // advance to next token
             advance();
-
+            if (currentToken.value == "/" || currentToken.value == "*") {
+                throw runtime_error("Comments are not allowed in JSON");
+            }
             // After comma, we MUST have another key-value pair, not a closing bracket
             if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
-                // straight to jail
                 throw runtime_error("Trailing comma in object - comma cannot appear before '}'");
             }
         } else {
-            // straight to jail
             throw runtime_error("Expected ',' or '}' in object");
         }
     }
@@ -195,11 +199,18 @@ void Parser::parseArray() {
         advance();
         return;
     }
+    // if comments are found here, throw error
+    if (currentToken.value == "/" || currentToken.value == "*") {
+        throw runtime_error("Comments are not allowed in JSON");
+    }
 
     while (true) {
         // Call this thing again to parse the value
         parseValue();
 
+        if (currentToken.value == "/" || currentToken.value == "*") {
+            throw runtime_error("Comments are not allowed in JSON");
+        }
         // Check what comes next
         if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
             // push right brace - it's the end of the array
@@ -216,11 +227,12 @@ void Parser::parseArray() {
 
             // After comma, we MUST have another value, not a closing bracket
             if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
-                // straight to jail
                 throw runtime_error("Trailing comma in array - comma cannot appear before ']'");
             }
+            if (currentToken.value == "/" || currentToken.value == "*") {
+                throw runtime_error("Comments are not allowed in JSON");
+            }
         } else {
-            // straight to jail
             throw runtime_error("Expected ',' or ']' in array");
         }
     }
@@ -264,7 +276,9 @@ void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream
         // current token and next token (if exists)
         const auto &token = tokens[i];
         const auto &nextToken = (i + 1 < tokens.size()) ? tokens[i + 1] : token;
-
+        if (indentLevel > 10) {
+            throw runtime_error("Exceeded maximum indentation level - possible malformed JSON");
+        }
         /*
             Switch on token type:
             * Handle each token type accordingly
@@ -369,19 +383,19 @@ void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
 void testJsonParsing() {
     // fail 1 - 15, each should trigger a parsing error
     const std::vector<std::string> testFiles = {
-        "./testing/fail1.json",
-        "./testing/fail2.json",
-        "./testing/fail3.json",
-        "./testing/fail4.json",
-        "./testing/fail5.json",
+        "./testing/pass1.json", // should pass
+        "./testing/pass2.json", // should pass
+        "./testing/pass3.json", // should pass
+        "./testing/pass4.json", // should pass
+        "./testing/pass5.json", // should pass
         "./testing/fail6.json",
         "./testing/fail7.json",
         "./testing/fail8.json",
         "./testing/fail9.json",
-        "./testing/fail10.json",
+        "./testing/pass10.json", // should pass
         "./testing/fail11.json",
         "./testing/fail12.json",
-        "./testing/fail13.json",
+        "./testing/pass13.json", // should pass
         "./testing/fail14.json",
         "./testing/fail15.json",
     };

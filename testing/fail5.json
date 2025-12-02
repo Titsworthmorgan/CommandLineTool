@@ -1,1 +1,1 @@
-{"name": "test", "value": undefined, "other": NaN, "infinity": Infinity}
+{"name": "test", "value": NaN, "other": NaN, "infinity": undefined}

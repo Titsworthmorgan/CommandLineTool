@@ -92,21 +92,21 @@ https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_
 
 Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass conditions are based on RFC 8259 and ECMA-404 standards:
 
-1. **fail1/pass1 - Trailing Commas** - done
+<!-- 1. **fail1/pass1 - Trailing Commas**
    - Pass Condition: No trailing commas allowed after last element in arrays or objects
-   - Regulation: RFC 8259 Section 5 & 6 - arrays and objects must not have trailing commas
+   - Regulation: RFC 8259 Section 5 & 6 - arrays and objects must not have trailing commas -->
 
-2. **fail2/pass2 - String Delimiters** - done
+<!-- 2. **fail2/pass2 - String Delimiters**
    - Pass Condition: Strings must use double quotes (") only, not single quotes (')
-   - Regulation: RFC 8259 Section 7 - strings must be enclosed in quotation marks (U+0022)
+   - Regulation: RFC 8259 Section 7 - strings must be enclosed in quotation marks (U+0022) -->
 
-3. **fail3/pass3 - Object Key Quoting** - done
+<!-- 3. **fail3/pass3 - Object Key Quoting**
    - Pass Condition: All object keys must be quoted strings
-   - Regulation: RFC 8259 Section 4 - object member names must be strings (quoted)
+   - Regulation: RFC 8259 Section 4 - object member names must be strings (quoted) -->
 
-4. **fail4/pass4 - Comments**
+<!-- 4. **fail4/pass4 - Comments** 
    - Pass Condition: No comments allowed (// or /* */)
-   - Regulation: RFC 8259 - JSON grammar does not include comments
+   - Regulation: RFC 8259 - JSON grammar does not include comments -->
 
 5. **fail5/pass5 - Primitive Values**
    - Pass Condition: Only true, false, null allowed as literals (no undefined, NaN, Infinity)
@@ -128,9 +128,9 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
    - Pass Condition: All strings must be properly closed with ending quotation mark
    - Regulation: RFC 8259 Section 7 - strings must begin and end with quotation marks
 
-10. **fail10/pass10 - Bracket Matching** - done
+<!-- 10. **fail10/pass10 - Bracket Matching** - done
     - Pass Condition: Opening brackets [ must match with ], { must match with }
-    - Regulation: RFC 8259 Sections 5 & 6 - proper structural tokens required
+    - Regulation: RFC 8259 Sections 5 & 6 - proper structural tokens required -->
 
 11. **fail11/pass11 - Duplicate Keys**
     - Pass Condition: Object keys should be unique (behavior of duplicates is undefined)
@@ -140,9 +140,9 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
     - Pass Condition: No comma after last array element
     - Regulation: RFC 8259 Section 5 - array values separated by commas, no trailing comma
 
-13. **fail13/pass13 - Structure Completion** - done
+<!-- 13. **fail13/pass13 - Structure Completion** - done
     - Pass Condition: All opened braces/brackets must be closed
-    - Regulation: RFC 8259 Section 2 - JSON text must be a complete structure
+    - Regulation: RFC 8259 Section 2 - JSON text must be a complete structure -->
 
 14. **fail14/pass14 - Number Sign**
     - Pass Condition: Positive numbers have no sign prefix, negative use minus only (no plus sign)
