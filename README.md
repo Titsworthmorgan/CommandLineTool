@@ -21,9 +21,9 @@ There are two shell scripts provided for compiling the project:
 
 # Usage Instructions
 To use the command line tool, run the executable with the desired options. Below are the available options:
-1. Run `test.sh -[flag] [fileName.Example]` to output the desired count based on the flag provided.
+1. Run `test.sh -[flag] [fileName.Example] [outputFileName.Example]` to output the desired count based on the flag provided.
 
-2. Navigate to the directory containing the executable and run `./your_executable_name -[flag] [fileName.Example]`.
+2. Navigate to the directory containing the executable and run `./your_executable_name -[flag] [fileName.Example] [outputFileName.Example]`.
     - Note: This will vary based on where you have your desired file located. You may need to specify the full path to the file.
 
 ### Available Options:
@@ -32,3 +32,5 @@ To use the command line tool, run the executable with the desired options. Below
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
 - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix - works... mostly. 
+
+# Testing
