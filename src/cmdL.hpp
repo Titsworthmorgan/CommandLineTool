@@ -2,11 +2,9 @@
 #define CMDL_HPP
 #include <fstream>
 #include <string>
-using namespace std;
-string displayHelp();
-int countBytes(ifstream &inFile);
-int countLines(ifstream &inFile);
-int countWords(ifstream &inFile);
+std::string displayHelp();
+int countBytes(std::ifstream &inFile);
+int countLines(std::ifstream &inFile);
+int countWords(std::ifstream &inFile);
 void clearOss();
-void parseAndWriteJsonFiles(ifstream &file1, ofstream &file2);
 #endif // CMDL_HPP
