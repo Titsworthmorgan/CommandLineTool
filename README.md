@@ -33,6 +33,7 @@ To use the command line tool, run the executable with the desired options. Below
 3. For the final project the following will be what we use:
     - `-h`: Displays help information about the tool.
     - `-c`: outputs number of bytes in a file
+    - `-f`: outputs number of characters in a file
     - `-l`: outputs number of lines in a file
     - `-w`: outputs number of words in a file
     - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix - works... mostly for now.
@@ -40,6 +41,7 @@ To use the command line tool, run the executable with the desired options. Below
 ## Available Options:
 - `-h`: Displays help information about the tool.
 - `-c`: outputs number of bytes in a file
+- `-f`: outputs number of characters in a file
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
 - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix.
