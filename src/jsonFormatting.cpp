@@ -95,6 +95,7 @@ std::vector<Tokenizer::Token> Parser::parse() {
 
     return tokens;
 }
+
 std::vector<Tokenizer::Token> parseJsonFile(std::ifstream &file) {
     Parser parser(file);
     return parser.parse();
@@ -198,5 +199,42 @@ void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
     } catch (const std::runtime_error &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         throw;
+    }
+}
+
+void testJsonParsing() {
+    // fail 1 - 15, each should trigger a parsing error
+    const std::vector<std::string> testFiles = {
+        "./testing/fail1.json",
+        "./testing/fail2.json",
+        "./testing/fail3.json",
+        "./testing/fail4.json",
+        "./testing/fail5.json",
+        "./testing/fail6.json",
+        "./testing/fail7.json",
+        "./testing/fail8.json",
+        "./testing/fail9.json",
+        "./testing/fail10.json",
+        "./testing/fail11.json",
+        "./testing/fail12.json",
+        "./testing/fail13.json",
+        "./testing/fail14.json",
+        "./testing/fail15.json",
+    };
+    // for each file, output an error message if it fails to parse for what it is supposed to fail on
+    for (const auto &filePath : testFiles) {
+        std::ifstream inFile(filePath);
+        if (!inFile) {
+            std::cerr << "Could not open file: " << filePath << std::endl;
+            continue;
+        }
+
+        try {
+            auto tokens = parseJsonFile(inFile);
+            std::cout << "Parsed successfully: " << filePath << std::endl;
+        } catch (const std::runtime_error &e) {
+            std::cout << "Failed to parse " << filePath << ": " << e.what() << std::endl;
+        }
+        inFile.close();
     }
 }

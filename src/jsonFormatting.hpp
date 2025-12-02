@@ -54,4 +54,6 @@ void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream
 
 void parseAndWriteJsonFiles(std::ifstream &file1, std::ofstream &file2);
 
+void testJsonParsing();
+
 #endif // JSONFORMATTING_HPP
