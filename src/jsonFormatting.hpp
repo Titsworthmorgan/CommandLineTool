@@ -6,9 +6,11 @@
 
 class Tokenizer {
   private:
+    // input file stream
     std::ifstream &inFile;
 
   public:
+    // token types
     enum class TokenType {
         LEFT_BRACKET,
         RIGHT_BRACKET,
@@ -23,37 +25,57 @@ class Tokenizer {
         END_OF_FILE,
         UNKNOWN
     };
-
+    // token structure
     struct Token {
         TokenType type;
         std::string value;
     };
-
+    // constructor
     Tokenizer(std::ifstream &file) : inFile(file) {}
+    // get next token from input file
     Token getNextToken();
 };
 
 class Parser {
   private:
+    // call the tokenizer
     Tokenizer tokenizer;
+    // current token being processed
     Tokenizer::Token currentToken;
+    // store all tokens
+    std::vector<Tokenizer::Token> tokens;
+    // advance to the next token
     void advance();
+    // check if current token matches type given
     bool match(Tokenizer::TokenType type) const;
+    // expect a token of a specific type, else throw error
     void expect(Tokenizer::TokenType type, const std::string &message);
+    // parse a value (object, array, string, number, bool, null)
+    void parseValue();
+    // parse an object
+    void parseObject();
+    // parse an array
+    void parseArray();
 
   public:
+    // constructor
     Parser(std::ifstream &file) : tokenizer(file) {
         advance();
     }
+    // main parse function - called immediately to get all tokens
     std::vector<Tokenizer::Token> parse();
 };
 
+// function to parse JSON file and return tokens
 std::vector<Tokenizer::Token> parseJsonFile(std::ifstream &file);
 
+// function to format tokens and write to output file
 void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream &outFile);
 
+// function to parse input JSON file and write formatted output to another file
 void parseAndWriteJsonFiles(std::ifstream &file1, std::ofstream &file2);
 
+// convenience test function
 void testJsonParsing();
 
 #endif // JSONFORMATTING_HPP

@@ -5,37 +5,57 @@
 using namespace std;
 
 Tokenizer::Token Tokenizer::getNextToken() {
+    // define a char to read
     char ch;
+    // skip whitespace
     while (inFile.get(ch)) {
         if (!isspace(ch)) {
             break;
         }
     }
+    // check for end of file
     if (inFile.eof()) {
         return {TokenType::END_OF_FILE, "\n"};
     }
+    // determine token type
     if (isdigit(ch) || ch == '-') {
+        // number
         std::string numStr(1, ch);
+        // read the rest of the number
         while (inFile.get(ch) && (isdigit(ch) || ch == '.')) {
+            // append digit or decimal point to number string
             numStr += ch;
         }
+        // unget the last character read that is not part of the number
         inFile.unget();
+        // return number token
         return {TokenType::NUMBER, numStr};
     }
+    // identifier (true, false, null)
     if (isalpha(ch)) {
+        // read identifier
         std::string identStr(1, ch);
+        // read the rest of the identifier
         while (inFile.get(ch) && isalpha(ch)) {
+            // append character to identifier string
             identStr += ch;
         }
+        // unget the last character read that is not part of the identifier
         inFile.unget();
+        // determine if identifier is a boolean or null
         if (identStr == "true" || identStr == "false") {
+            // boolean value
             return {TokenType::BOOL, identStr};
+            // null value
         } else if (identStr == "null") {
+            // return null token
             return {TokenType::NULL_VALUE, identStr};
         } else {
+            // unknown identifier
             return {TokenType::UNKNOWN, identStr};
         }
     }
+    // single character tokens
     switch (ch) {
         case '{':
             return {TokenType::LEFT_BRACKET, "{"};
@@ -46,6 +66,8 @@ Tokenizer::Token Tokenizer::getNextToken() {
         case ':':
             return {TokenType::COLON, ":"};
         case '"': {
+            // string value -- we get the entire string until next quote here.
+            // TODO: make this a function that handles escape sequences properly. Will need to have error handling here too I think.
             std::string strValue;
             while (inFile.get(ch) && ch != '"') {
                 strValue += ch;
@@ -63,53 +85,190 @@ Tokenizer::Token Tokenizer::getNextToken() {
     }
 }
 
+// Parser member function implementations
 void Parser::advance() {
+    // assign next token to currentToken
     currentToken = tokenizer.getNextToken();
 }
 
+// check if current token matches type given
 bool Parser::match(Tokenizer::TokenType type) const {
+    // return true if current token type matches given type
     return currentToken.type == type;
 }
 
+// expect a token of a specific type, else throw error
 void Parser::expect(Tokenizer::TokenType type, const std::string &message) {
+    // if current token type does not match given type, throw error
     if (!match(type)) {
         throw runtime_error("Parsing error: " + message);
     }
+    // otherwise, advance to next token
     advance();
 }
 
-std::vector<Tokenizer::Token> Parser::parse() {
-    std::vector<Tokenizer::Token> tokens;
+// parse a value (object, array, string, number, bool, null)
+void Parser::parseValue() {
+    // push current token to tokens vector
+    tokens.push_back(currentToken);
+    // determine type of value and parse accordingly
+    if (match(Tokenizer::TokenType::LEFT_BRACKET)) {
+        // object
+        parseObject();
+    } else if (match(Tokenizer::TokenType::LEFT_BRACE)) {
+        // array
+        parseArray();
+    } else if (match(Tokenizer::TokenType::STRING) ||
+               match(Tokenizer::TokenType::NUMBER) ||
+               match(Tokenizer::TokenType::BOOL) ||
+               match(Tokenizer::TokenType::NULL_VALUE)) {
+        // primitive value
+        advance();
+    } else {
+        // angry
+        throw runtime_error("Expected a value");
+    }
+}
 
+void Parser::parseObject() {
+    // expect left bracket '{'
+    expect(Tokenizer::TokenType::LEFT_BRACKET, "Expected '{'");
+    // check for empty object
+    if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
+        // empty object
+        tokens.push_back(currentToken);
+        // push right bracket and advance
+        advance();
+        return;
+    }
+    // parse key-value pairs
+    while (true) {
+        // Parse key (must be a string)
+        tokens.push_back(currentToken);
+        // if not a string, get mad
+        expect(Tokenizer::TokenType::STRING, "Expected string key in object");
+
+        // Parse colon ':'
+        tokens.push_back(currentToken);
+        expect(Tokenizer::TokenType::COLON, "Expected ':' after object key");
+
+        // Parse value again, must be a valid JSON value if we got here
+        parseValue();
+
+        // if next token is right bracket, end of object
+        if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
+            // push right bracket
+            tokens.push_back(currentToken);
+            // advance and break
+            advance();
+            break;
+            // else if next token is comma, continue to next key-value pair
+        } else if (match(Tokenizer::TokenType::COMMA)) {
+            // push comma
+            tokens.push_back(currentToken);
+            // advance to next token
+            advance();
+
+            // After comma, we MUST have another key-value pair, not a closing bracket
+            if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
+                // straight to jail
+                throw runtime_error("Trailing comma in object - comma cannot appear before '}'");
+            }
+        } else {
+            // straight to jail
+            throw runtime_error("Expected ',' or '}' in object");
+        }
+    }
+}
+
+void Parser::parseArray() {
+    // expect left brace '['
+    expect(Tokenizer::TokenType::LEFT_BRACE, "Expected '['");
+
+    // check for empty array
+    if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
+        // empty array
+        tokens.push_back(currentToken);
+        // push right brace and advance
+        advance();
+        return;
+    }
+
+    while (true) {
+        // Call this thing again to parse the value
+        parseValue();
+
+        // Check what comes next
+        if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
+            // push right brace - it's the end of the array
+            tokens.push_back(currentToken);
+            // advance and break
+            advance();
+            break;
+            // more elements
+        } else if (match(Tokenizer::TokenType::COMMA)) {
+            // push comma
+            tokens.push_back(currentToken);
+            //  advance to next token
+            advance();
+
+            // After comma, we MUST have another value, not a closing bracket
+            if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
+                // straight to jail
+                throw runtime_error("Trailing comma in array - comma cannot appear before ']'");
+            }
+        } else {
+            // straight to jail
+            throw runtime_error("Expected ',' or ']' in array");
+        }
+    }
+}
+
+std::vector<Tokenizer::Token> Parser::parse() {
+    // clear any existing tokens
+    tokens.clear();
+    // initial check for valid starting token
     if (!match(Tokenizer::TokenType::LEFT_BRACKET) &&
         !match(Tokenizer::TokenType::LEFT_BRACE)) {
         throw std::runtime_error("JSON must start with '{' or '['");
     }
-
-    while (!match(Tokenizer::TokenType::END_OF_FILE)) {
-        tokens.push_back(currentToken);
-        advance();
-    }
-
+    // parse the value
+    parseValue();
+    // push end of file token
     tokens.push_back(currentToken);
-
+    // expect end of file
+    expect(Tokenizer::TokenType::END_OF_FILE, "Expected end of file after JSON");
+    // return all tokens
     return tokens;
 }
 
 std::vector<Tokenizer::Token> parseJsonFile(std::ifstream &file) {
+    // create parser instance
     Parser parser(file);
+    // return parsed tokens
     return parser.parse();
 }
 
 void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream &outFile) {
+    // format JSON tokens to file with indentation
     int indentLevel = 0;
+    // track if we need to indent next token
     bool indentNext = false;
+    // track if indentation has been applied for the current line
     bool indentApplied = false;
 
+    // iterate through tokens and format output
     for (size_t i = 0; i < tokens.size(); i++) {
+        // current token and next token (if exists)
         const auto &token = tokens[i];
         const auto &nextToken = (i + 1 < tokens.size()) ? tokens[i + 1] : token;
 
+        /*
+            Switch on token type:
+            * Handle each token type accordingly
+            * Adjust indentation levels and line breaks as needed
+            * Write formatted output to outFile
+        */
         switch (token.type) {
             case Tokenizer::TokenType::LEFT_BRACKET:
                 outFile << "{";
@@ -194,9 +353,12 @@ void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream
 
 void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
     try {
+        // parse input file
         auto tokens = parseJsonFile(inFile);
+        // format and write to output file
         formatJsonToFile(tokens, outFile);
     } catch (const std::runtime_error &e) {
+        // handle parsing errors
         std::cerr << "Error: " << e.what() << std::endl;
         throw;
     }
