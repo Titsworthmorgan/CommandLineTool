@@ -9,6 +9,7 @@ using namespace std;
 enum CommandLineOptions {
     h,
     c,
+    f,
     l,
     w,
     j,
@@ -46,6 +47,21 @@ int main(int argc, char *argv[]) {
 
                     inFile.close();
 
+                    break;
+                }
+                case 'f': {
+                    ifstream inFile;
+                    inFile.open(argv[i + 1]);
+                    if (!inFile) {
+                        cerr << strerror(errno) << endl;
+                        cerr << "Invalid file path: " << argv[i + 1] << endl;
+                        cerr.clear();
+                        return 1;
+                    }
+                    int charCount;
+                    charCount = countCharacters(inFile);
+                    cout << "Character count: " << charCount << endl;
+                    inFile.close();
                     break;
                 }
                 case 'l': {
