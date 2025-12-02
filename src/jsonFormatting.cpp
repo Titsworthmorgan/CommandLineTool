@@ -80,6 +80,8 @@ Tokenizer::Token Tokenizer::getNextToken() {
             return {TokenType::RIGHT_BRACE, "]"};
         case '\n':
             return {TokenType::END_OF_FILE, "\n"};
+        case '\'':
+            throw runtime_error("Single quotes are not valid in JSON strings");
         default:
             return {TokenType::UNKNOWN, std::string(1, ch)};
     }

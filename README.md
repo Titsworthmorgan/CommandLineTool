@@ -92,15 +92,15 @@ https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_
 
 Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass conditions are based on RFC 8259 and ECMA-404 standards:
 
-1. **fail1/pass1 - Trailing Commas**
+1. **fail1/pass1 - Trailing Commas** - done
    - Pass Condition: No trailing commas allowed after last element in arrays or objects
    - Regulation: RFC 8259 Section 5 & 6 - arrays and objects must not have trailing commas
 
-2. **fail2/pass2 - String Delimiters**
+2. **fail2/pass2 - String Delimiters** - done
    - Pass Condition: Strings must use double quotes (") only, not single quotes (')
    - Regulation: RFC 8259 Section 7 - strings must be enclosed in quotation marks (U+0022)
 
-3. **fail3/pass3 - Object Key Quoting**
+3. **fail3/pass3 - Object Key Quoting** - done
    - Pass Condition: All object keys must be quoted strings
    - Regulation: RFC 8259 Section 4 - object member names must be strings (quoted)
 
@@ -128,7 +128,7 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
    - Pass Condition: All strings must be properly closed with ending quotation mark
    - Regulation: RFC 8259 Section 7 - strings must begin and end with quotation marks
 
-10. **fail10/pass10 - Bracket Matching**
+10. **fail10/pass10 - Bracket Matching** - done
     - Pass Condition: Opening brackets [ must match with ], { must match with }
     - Regulation: RFC 8259 Sections 5 & 6 - proper structural tokens required
 
@@ -140,7 +140,7 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
     - Pass Condition: No comma after last array element
     - Regulation: RFC 8259 Section 5 - array values separated by commas, no trailing comma
 
-13. **fail13/pass13 - Structure Completion**
+13. **fail13/pass13 - Structure Completion** - done
     - Pass Condition: All opened braces/brackets must be closed
     - Regulation: RFC 8259 Section 2 - JSON text must be a complete structure
 
