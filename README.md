@@ -6,6 +6,16 @@ This may be expanded into something like a json parser or, who knows, but for th
 Anything additional will require specific flags to be passed in and potentially return debug information if not validated against all test cases. 
 (as many as I can remember or find online at least)
 
+### Notes
+- I wanted to put the JSON formatter into two classes.
+    - One for lexical analysis (tokenizing)
+    - One for parsing and formatting
+- I used: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c2-use-class-if-the-class-has-an-invariant-use-struct-if-the-data-members-can-vary-independently
+as a guide for when to use struct vs class in C++. I also did a bunch of other digging and deduced that classes should be declared in header files and their methods defined in cpp files.
+- Testing I just grabbed the two most official looking JSON standards I could find online and made test cases based on those.
+    - https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf - The JavaScript Object Notation (JSON) Data Interchange Format
+    - https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf - The JSON Data Interchange Standard
+- I started with using a some old entity relation diagrams I used previously for work, and generate dummy data JSON based on those to use as test cases.
 
 # Features
 - Character counter (to be added)
@@ -82,15 +92,15 @@ https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_
 
 Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass conditions are based on RFC 8259 and ECMA-404 standards:
 
-1. **fail1/pass1 - Trailing Commas**
+1. **fail1/pass1 - Trailing Commas** - done
    - Pass Condition: No trailing commas allowed after last element in arrays or objects
    - Regulation: RFC 8259 Section 5 & 6 - arrays and objects must not have trailing commas
 
-2. **fail2/pass2 - String Delimiters**
+2. **fail2/pass2 - String Delimiters** - done
    - Pass Condition: Strings must use double quotes (") only, not single quotes (')
    - Regulation: RFC 8259 Section 7 - strings must be enclosed in quotation marks (U+0022)
 
-3. **fail3/pass3 - Object Key Quoting**
+3. **fail3/pass3 - Object Key Quoting** - done
    - Pass Condition: All object keys must be quoted strings
    - Regulation: RFC 8259 Section 4 - object member names must be strings (quoted)
 
@@ -118,7 +128,7 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
    - Pass Condition: All strings must be properly closed with ending quotation mark
    - Regulation: RFC 8259 Section 7 - strings must begin and end with quotation marks
 
-10. **fail10/pass10 - Bracket Matching**
+10. **fail10/pass10 - Bracket Matching** - done
     - Pass Condition: Opening brackets [ must match with ], { must match with }
     - Regulation: RFC 8259 Sections 5 & 6 - proper structural tokens required
 
@@ -130,7 +140,7 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
     - Pass Condition: No comma after last array element
     - Regulation: RFC 8259 Section 5 - array values separated by commas, no trailing comma
 
-13. **fail13/pass13 - Structure Completion**
+13. **fail13/pass13 - Structure Completion** - done
     - Pass Condition: All opened braces/brackets must be closed
     - Regulation: RFC 8259 Section 2 - JSON text must be a complete structure
 

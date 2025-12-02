@@ -13,6 +13,7 @@ enum CommandLineOptions {
     l,
     w,
     j,
+    t, // for testing json formatting in /testing folder
 };
 
 int main(int argc, char *argv[]) {
@@ -120,6 +121,11 @@ int main(int argc, char *argv[]) {
                     file1.close();
                     file2.close();
                     i += 1;
+                    break;
+                }
+                case 't': {
+                    // call a single function to run all json formatting tests in /testing folder
+                    testJsonParsing();
                     break;
                 }
                 default: {
