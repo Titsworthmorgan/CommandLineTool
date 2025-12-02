@@ -383,21 +383,36 @@ void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
 void testJsonParsing() {
     // fail 1 - 15, each should trigger a parsing error
     const std::vector<std::string> testFiles = {
-        "./testing/pass1.json", // should pass
-        "./testing/pass2.json", // should pass
-        "./testing/pass3.json", // should pass
-        "./testing/pass4.json", // should pass
-        "./testing/pass5.json", // should pass
+        "./testing/fail1.json",
+        "./testing/fail2.json", 
+        "./testing/fail3.json",
+        "./testing/fail4.json",
+        "./testing/fail5.json",
         "./testing/fail6.json",
         "./testing/fail7.json",
         "./testing/fail8.json",
         "./testing/fail9.json",
-        "./testing/pass10.json", // should pass
+        "./testing/fail10.json",
         "./testing/fail11.json",
         "./testing/fail12.json",
-        "./testing/pass13.json", // should pass
+        "./testing/fail13.json",
         "./testing/fail14.json",
         "./testing/fail15.json",
+        "./testing/pass1.json",
+        "./testing/pass2.json",
+        "./testing/pass3.json",
+        "./testing/pass4.json",
+        "./testing/pass5.json",
+        "./testing/pass6.json",
+        "./testing/pass7.json",
+        "./testing/pass8.json",
+        "./testing/pass9.json",
+        "./testing/pass10.json",
+        "./testing/pass11.json",
+        "./testing/pass12.json",
+        "./testing/pass13.json",
+        "./testing/pass14.json",
+        "./testing/pass15.json"
     };
     // for each file, output an error message if it fails to parse for what it is supposed to fail on
     for (const auto &filePath : testFiles) {
