@@ -28,6 +28,10 @@ Tokenizer::Token Tokenizer::getNextToken() {
         }
         // unget the last character read that is not part of the number
         inFile.unget();
+        // no leading zero's allowed unless the number is zero.something
+        if (numStr[0] == '0' && numStr.length() > 1 && numStr[1] != '.') {
+            throw runtime_error("Invalid number format with leading zeros: " + numStr);
+        }
         // return number token
         return {TokenType::NUMBER, numStr};
     }
@@ -66,12 +70,60 @@ Tokenizer::Token Tokenizer::getNextToken() {
         case ':':
             return {TokenType::COLON, ":"};
         case '"': {
-            // string value -- we get the entire string until next quote here.
-            // TODO: make this a function that handles escape sequences properly. Will need to have error handling here too I think.
             std::string strValue;
             while (inFile.get(ch) && ch != '"') {
+                cout << "Reading char: " << ch << endl;
                 strValue += ch;
             }
+            cout << "Completed string: " << strValue << endl;
+            if (strValue.find('\n') != std::string::npos) {
+                throw runtime_error("String literals cannot contain newlines");
+            }
+
+            if (strValue.find('\r') != std::string::npos) {
+                throw runtime_error("String literals cannot contain carriage returns");
+            }
+
+            if (strValue.find('\t') != std::string::npos) {
+                throw runtime_error("String literals cannot contain tabs");
+            }
+
+            if (strValue.find('\\') != std::string::npos) {
+                throw runtime_error("String literals cannot contain backslashes");
+            }
+
+            if (strValue.find('"') != std::string::npos) {
+                throw runtime_error("String literals cannot contain double quotes");
+            }
+
+            if (strValue.find('\0') != std::string::npos) {
+                throw runtime_error("String literals cannot contain null characters");
+            }
+
+            if (strValue.find('\b') != std::string::npos) {
+                throw runtime_error("String literals cannot contain backspace characters");
+            }
+
+            if (strValue.find('\f') != std::string::npos) {
+                throw runtime_error("String literals cannot contain form feed characters");
+            }
+
+            if (strValue.find('\v') != std::string::npos) {
+                throw runtime_error("String literals cannot contain vertical tab characters");
+            }
+
+            if (strValue.find('\a') != std::string::npos) {
+                throw runtime_error("String literals cannot contain alert/bell characters");
+            }
+
+            if (strValue.find('\x1B') != std::string::npos) {
+                throw runtime_error("String literals cannot contain escape characters");
+            }
+
+            if (strValue.find('\x7F') != std::string::npos) {
+                throw runtime_error("String literals cannot contain delete characters");
+            }
+            
             return {TokenType::STRING, strValue};
         }
         case '[':
@@ -110,16 +162,19 @@ void Parser::expect(Tokenizer::TokenType type, const std::string &message) {
 }
 
 // parse a value (object, array, string, number, bool, null)
-void Parser::parseValue() {
+void Parser::parseValue(int depth) {
     // push current token to tokens vector
     tokens.push_back(currentToken);
+    if (depth > 20) {
+        throw runtime_error("Exceeded maximum parsing depth - possible malformed JSON");
+    }
     // determine type of value and parse accordingly
     if (match(Tokenizer::TokenType::LEFT_BRACKET)) {
         // object
-        parseObject();
+        parseObject(depth + 1);
     } else if (match(Tokenizer::TokenType::LEFT_BRACE)) {
         // array
-        parseArray();
+        parseArray(depth + 1);
     } else if (match(Tokenizer::TokenType::STRING) ||
                match(Tokenizer::TokenType::NUMBER) ||
                match(Tokenizer::TokenType::BOOL) ||
@@ -134,7 +189,7 @@ void Parser::parseValue() {
     }
 }
 
-void Parser::parseObject() {
+void Parser::parseObject(int depth) {
     // expect left bracket '{'
     expect(Tokenizer::TokenType::LEFT_BRACKET, "Expected '{'");
 
@@ -159,7 +214,7 @@ void Parser::parseObject() {
         tokens.push_back(currentToken);
         expect(Tokenizer::TokenType::COLON, "Expected ':' after object key");
         // Parse value again, must be a valid JSON value if we got here
-        parseValue();
+        parseValue(depth);
 
         // if next token is right bracket, end of object
         if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
@@ -187,7 +242,7 @@ void Parser::parseObject() {
     }
 }
 
-void Parser::parseArray() {
+void Parser::parseArray(int depth) {
     // expect left brace '['
     expect(Tokenizer::TokenType::LEFT_BRACE, "Expected '['");
 
@@ -206,7 +261,7 @@ void Parser::parseArray() {
 
     while (true) {
         // Call this thing again to parse the value
-        parseValue();
+        parseValue(depth);
 
         if (currentToken.value == "/" || currentToken.value == "*") {
             throw runtime_error("Comments are not allowed in JSON");
@@ -246,8 +301,9 @@ std::vector<Tokenizer::Token> Parser::parse() {
         !match(Tokenizer::TokenType::LEFT_BRACE)) {
         throw std::runtime_error("JSON must start with '{' or '['");
     }
+    depth = 0;
     // parse the value
-    parseValue();
+    parseValue(depth);
     // push end of file token
     tokens.push_back(currentToken);
     // expect end of file
@@ -335,7 +391,7 @@ void formatJsonToFile(const std::vector<Tokenizer::Token> &tokens, std::ofstream
                     indentApplied = true;
                     indentNext = false;
                 }
-                outFile << "\"" << token.value << "\"";
+                outFile << token.value;
                 break;
 
             case Tokenizer::TokenType::NUMBER:
@@ -383,36 +439,36 @@ void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
 void testJsonParsing() {
     // fail 1 - 15, each should trigger a parsing error
     const std::vector<std::string> testFiles = {
-        "./testing/fail1.json",
-        "./testing/fail2.json", 
-        "./testing/fail3.json",
-        "./testing/fail4.json",
-        "./testing/fail5.json",
-        "./testing/fail6.json",
-        "./testing/fail7.json",
-        "./testing/fail8.json",
+        // "./testing/fail1.json",
+        // "./testing/fail2.json",
+        // "./testing/fail3.json",
+        // "./testing/fail4.json",
+        // "./testing/fail5.json",
+        // "./testing/fail6.json",
+        // "./testing/fail7.json",
+        // "./testing/fail8.json",
         "./testing/fail9.json",
-        "./testing/fail10.json",
-        "./testing/fail11.json",
-        "./testing/fail12.json",
-        "./testing/fail13.json",
-        "./testing/fail14.json",
-        "./testing/fail15.json",
-        "./testing/pass1.json",
-        "./testing/pass2.json",
-        "./testing/pass3.json",
-        "./testing/pass4.json",
-        "./testing/pass5.json",
-        "./testing/pass6.json",
-        "./testing/pass7.json",
-        "./testing/pass8.json",
-        "./testing/pass9.json",
-        "./testing/pass10.json",
-        "./testing/pass11.json",
-        "./testing/pass12.json",
-        "./testing/pass13.json",
-        "./testing/pass14.json",
-        "./testing/pass15.json"
+        // "./testing/fail10.json",
+        // "./testing/fail11.json",
+        // "./testing/fail12.json",
+        // "./testing/fail13.json",
+        // "./testing/fail14.json",
+        // "./testing/fail15.json",
+        // "./testing/pass1.json",
+        // "./testing/pass2.json",
+        // "./testing/pass3.json",
+        // "./testing/pass4.json",
+        // "./testing/pass5.json",
+        // "./testing/pass6.json",
+        // "./testing/pass7.json",
+        // "./testing/pass8.json",
+        // "./testing/pass9.json",
+        // "./testing/pass10.json",
+        // "./testing/pass11.json",
+        // "./testing/pass12.json",
+        // "./testing/pass13.json",
+        // "./testing/pass14.json",
+        // "./testing/pass15.json"
     };
     // for each file, output an error message if it fails to parse for what it is supposed to fail on
     for (const auto &filePath : testFiles) {

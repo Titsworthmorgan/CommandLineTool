@@ -23,6 +23,9 @@ class Tokenizer {
         BOOL,
         NULL_VALUE,
         END_OF_FILE,
+        UNDEFINED_,
+        NaN,
+        Inf,
         UNKNOWN
     };
     // token structure
@@ -44,6 +47,8 @@ class Parser {
     Tokenizer::Token currentToken;
     // store all tokens
     std::vector<Tokenizer::Token> tokens;
+    // current depth level
+    int depth = 0;
     // advance to the next token
     void advance();
     // check if current token matches type given
@@ -51,12 +56,11 @@ class Parser {
     // expect a token of a specific type, else throw error
     void expect(Tokenizer::TokenType type, const std::string &message);
     // parse a value (object, array, string, number, bool, null)
-    void parseValue();
+    void parseValue(int depth);
     // parse an object
-    void parseObject();
+    void parseObject(int depth);
     // parse an array
-    void parseArray();
-
+    void parseArray(int depth);
   public:
     // constructor
     Parser(std::ifstream &file) : tokenizer(file) {
