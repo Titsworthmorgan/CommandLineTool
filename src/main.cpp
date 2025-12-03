@@ -15,48 +15,60 @@ enum CommandLineOptions {
     j,
     t, // for testing json formatting in /testing folder
 };
-
+// take arg count and arg vector
 int main(int argc, char *argv[]) {
+    // create input file stream
     ifstream inFile;
+    // process each argument
     for (int i = 1; i < argc; i++) {
+        // check for option flag
         if (*argv[i] == '-') {
+            // get option character
             char option = tolower(argv[i][1]);
+            /*
+                Switch on option character:
+                    - get file path from next argument
+                    - open file
+                    - check for errors
+                    - call appropriate function
+                    - output result
+                    - close file
+            */
             switch (option) {
                 case 'h': {
+                    // self explanatory here
                     displayHelp();
+                    // probably not needed but oh well
                     clearOss();
                     break;
                 }
                 case 'c': {
+                    // grab file path from next argument
                     ifstream inFile;
+                    // open the file
                     inFile.open(argv[i + 1]);
-
+                    // check for file open errors
                     if (!inFile) {
-                        cerr << strerror(errno) << endl;
-
-                        cerr << "Invalid file path: " << argv[i + 1] << endl;
-
-                        cerr.clear();
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
                         return 1;
                     }
-
+                    // byte count variable
                     int byteCount;
-
+                    // call byte count function
                     byteCount = countBytes(inFile);
-
+                    // output byte count
                     cout << "Byte count: " << byteCount << endl;
-
+                    // close the file
                     inFile.close();
 
                     break;
                 }
                 case 'f': {
+                    // same thing
                     ifstream inFile;
                     inFile.open(argv[i + 1]);
                     if (!inFile) {
-                        cerr << strerror(errno) << endl;
-                        cerr << "Invalid file path: " << argv[i + 1] << endl;
-                        cerr.clear();
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
                         return 1;
                     }
                     int charCount;
@@ -69,9 +81,7 @@ int main(int argc, char *argv[]) {
                     ifstream inFile;
                     inFile.open(argv[i + 1]);
                     if (!inFile) {
-                        cerr << strerror(errno) << endl;
-                        cerr << "Invalid file path: " << argv[i + 1] << endl;
-                        cerr.clear();
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
                         return 1;
                     }
                     int lineCount;
@@ -83,9 +93,7 @@ int main(int argc, char *argv[]) {
                 case 'w': {
                     inFile.open(argv[i + 1]);
                     if (!inFile) {
-                        cerr << strerror(errno) << endl;
-                        cerr << "Invalid file path: " << argv[i + 1] << endl;
-                        cerr.clear();
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
                         return 1;
                     }
                     int wordCount;
@@ -100,20 +108,18 @@ int main(int argc, char *argv[]) {
                     file1.open(argv[i + 1]);
                     file2.open(argv[i + 2]);
                     if (!file1) {
-                        cerr << strerror(errno) << endl;
-                        cerr << "Invalid file path: " << argv[i + 1] << endl;
-                        cerr.clear();
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
                         return 1;
                     }
                     if (!file2) {
-                        cerr << strerror(errno) << endl;
-                        cerr << "Invalid file path: " << argv[i + 2] << endl;
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 2]));
                         cerr.clear();
                         return 1;
                     }
                     try {
                         parseAndWriteJsonFiles(file1, file2);
                     } catch (const runtime_error &e) {
+                        throw runtime_error("JSON Parsing/Formatting Error: " + std::string(e.what()));
                         file1.close();
                         file2.close();
                         return 1;
@@ -124,7 +130,13 @@ int main(int argc, char *argv[]) {
                     break;
                 }
                 case 't': {
-                    // call a single function to run all json formatting tests in /testing folder
+                    // test function for JSON parsing
+                    /*
+                        Some things that do NOT work, and I couldnt figure out:
+                        - e numbers (1e10, -2.5e-3) or exponential notation
+                        - array objects with duplicate keys (e.g., [{"id":1,"name":"A"},{"id":1,"name":"B"}])
+                        These should be valid if in an array. But my duplicate key check flags them.
+                    */
                     testJsonParsing();
                     break;
                 }
