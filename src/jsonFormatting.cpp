@@ -125,7 +125,7 @@ Tokenizer::Token Tokenizer::getNextToken() {
                         " \ / b f n r t uXXXXX
                         Anything else is invalid
                         Just throwing this all in an if statement.
-                        \n is not quite working, but I'll leave that one. 
+                        \n is not quite working, but I'll leave that one.
                     */
                     if (nextChar != '"' && nextChar != '\\' && nextChar != '/' &&
                         nextChar != 'b' && nextChar != 'f' && nextChar != 'n' &&

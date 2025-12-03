@@ -16,6 +16,11 @@ as a guide for when to use struct vs class in C++. I also did a bunch of other d
     - https://www.rfc-editor.org/rfc/pdfrfc/rfc8259.txt.pdf - The JavaScript Object Notation (JSON) Data Interchange Format
     - https://ecma-international.org/wp-content/uploads/ECMA-404_2nd_edition_december_2017.pdf - The JSON Data Interchange Standard
 - I started with using a some old entity relation diagrams I used previously for work, and generate dummy data JSON based on those to use as test cases.
+- Some features are a little odd, like the parser has -most- of the error handling in place however some is handled in token generation.
+    - This is because certain errors are easier to catch during tokenization rather than parsing, such as invalid number formats (leading zeros, multiple decimal points) and unclosed strings.
+    - Some of the error messages are not EXACTLY indicative of the actual problem, but they absolutely do point you in the right direction. IE; `Expected , or '}'` instead of unclosed string.
+- The JSON formatter is still not quite perfect, but it generally does a good job of formatting valid JSON files into a more human-readable format. Its not quite up to what something like prettier or jq would do, but its close enough for this.
+- clang-format is purely for my own convenienc to keep code style consistent. This can be ignored if desired and the default formatting will take precedence. 
 
 # Features
 - Character counter (to be added)
@@ -57,6 +62,7 @@ To use the command line tool, run the executable with the desired options. Below
 - `-f`: outputs number of characters in a file
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
+- `-a`: outputs all of the above counts in a single run
 - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix.
 - `-t`: tests all of the JSON test cases according to the standards found online
 
@@ -73,6 +79,7 @@ To use the command line tool, run the executable with the desired options. Below
 Testing I am looking to generate as many different pass/fail cases as I can think of or find online.
 For this I have a BOAT LOAD of extra ERD's that could be put into 'real-word' scenarios or, at least ones I've used in the past for work without sharing any proprietary information.
 The main focus of testing for now will be on the JSON formatting functionality as that is the most complex feature of the tool so far.
+Furthermore, this was tested on both linux and windows to ensure cross platform compatibility.
 
 ## WC Standards
 For now I'm working to follow these standards:

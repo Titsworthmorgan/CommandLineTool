@@ -16,6 +16,9 @@ I kept this one pretty simple:
   "{", ":", "value", "}", etc.
 3. Functions:
   - getNextToken() - reads through the file and returns the next token it finds.
+4. Error Handling:
+  - Throws runtime errors for invalid number formats (leading zeros, multiple decimal points).
+  - Throws errors for strings that are not properly closed.
 */
 class Tokenizer {
   private:
@@ -23,7 +26,6 @@ class Tokenizer {
     std::ifstream &inFile;
 
   public:
-
     // token types
     enum class TokenType {
         LEFT_BRACKET,
@@ -57,14 +59,15 @@ class Tokenizer {
 
 /*
 Parser Class!
-This is used to read/translate and build a vector of "tokens" from what I dubbed the Tokenizer. Menacing name!
+This is used to read/translate and build a vector of "tokens" from what I dubbed the Tokenizer. Menacing!
 1. Data structure:
   - Uses the Tokenizer class to get tokens from the file.
   - Keeps track of the current token being processed.
   - Stores all tokens in a vector.
 2. Process:
   - The parser reads tokens from the Tokenizer and builds a structured representation of the JSON data.
-  - It handles different JSON constructs like objects, arrays, strings, numbers, booleans, and null values.
+  - It handles different JSON constructs like primitive values, objects, and arrays.
+  - It includes error handling for malformed JSON and duplicate keys in objects.
 3. Functions:
   - advance() - moves to the next token.
   - match() - checks if the current token matches a specific type.
