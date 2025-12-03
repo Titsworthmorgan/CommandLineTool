@@ -6,15 +6,6 @@
 #include <stdexcept>
 using namespace std;
 
-enum CommandLineOptions {
-    h,
-    c,
-    f,
-    l,
-    w,
-    j,
-    t, // for testing json formatting in /testing folder
-};
 // take arg count and arg vector
 int main(int argc, char *argv[]) {
     // create input file stream
@@ -138,6 +129,31 @@ int main(int argc, char *argv[]) {
                         These should be valid if in an array. But my duplicate key check flags them.
                     */
                     testJsonParsing();
+                    break;
+                }
+                case 'a': {
+                    // all of the above counts in a single run
+                    ifstream inFile;
+                    inFile.open(argv[i + 1]);
+                    if (!inFile) {
+                        throw runtime_error("Invalid file path: " + std::string(argv[i + 1]));
+                        return 1;
+                    }
+                    int byteCount = countBytes(inFile);
+                    inFile.clear();
+                    inFile.seekg(0, ios::beg);
+                    int charCount = countCharacters(inFile);
+                    inFile.clear();
+                    inFile.seekg(0, ios::beg);
+                    int lineCount = countLines(inFile);
+                    inFile.clear();
+                    inFile.seekg(0, ios::beg);
+                    int wordCount = countWords(inFile);
+                    cout << "Byte count: " << byteCount << endl;
+                    cout << "Character count: " << charCount << endl;
+                    cout << "Word count: " << wordCount << endl;
+                    cout << "Line count: " << lineCount << endl;
+                    inFile.close();
                     break;
                 }
                 default: {

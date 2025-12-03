@@ -23,13 +23,14 @@ as a guide for when to use struct vs class in C++. I also did a bunch of other d
 - Line counter
 - Word counter
 - JSON formatter (basic functionality)
+- JSON testing
 
 # System and Compiler
 - Developed and tested on Linux and Windows
 - Compiled with g++ (GNU Compiler Collection)
 
 # Compilation Instructions
-There are two shell scripts provided for compiling the project:
+There are two shell scripts provided for compiling the project, because typing everything as many times as was needed was a no go.
 1. `build.sh`: For building the project and generating the executable.
 2. `test.sh`: For testing the compiled executable.
 
@@ -45,8 +46,10 @@ To use the command line tool, run the executable with the desired options. Below
     - `-c`: outputs number of bytes in a file
     - `-f`: outputs number of characters in a file
     - `-l`: outputs number of lines in a file
-    - `-w`: outputs number of words in a file
-    - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix - works... mostly for now.
+    - `-w`: outputs number of words in a file\
+    - `-a`: outputs all of the above counts in a single run
+    - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix - works... mostly.
+    - `-t`: tests all of the JSON test cases according to the standards found online
 
 ## Available Options:
 - `-h`: Displays help information about the tool.
@@ -55,6 +58,7 @@ To use the command line tool, run the executable with the desired options. Below
 - `-l`: outputs number of lines in a file
 - `-w`: outputs number of words in a file
 - `-j`: formats input JSON file to be more human-readable in duplicate file with -formatted.json suffix.
+- `-t`: tests all of the JSON test cases according to the standards found online
 
 # Project Structure
 - `src/`: Contains the source code files.
@@ -70,7 +74,6 @@ To use the command line tool, run the executable with the desired options. Below
 Testing I am looking to generate as many different pass/fail cases as I can think of or find online.
 For this I have a BOAT LOAD of extra ERD's that could be put into 'real-word' scenarios or, at least ones I've used in the past for work without sharing any proprietary information.
 The main focus of testing for now will be on the JSON formatting functionality as that is the most complex feature of the tool so far.
-As of 2025/12/01 testing is 'done' for the word/line/byte counting features aside from the characters counting which, as I'm typing realized I missed.
 
 ## WC Standards
 For now I'm working to follow these standards:
@@ -158,3 +161,4 @@ Each test case has a fail*.json (invalid) and pass*.json (valid) pair. Pass cond
 2. Generate test json files, pass{num}.json EG: pass1.json, pass2.json, etc. that are valid json files.
 3. Run the tool against each file and verify the output is as expected.
 4. Fix bugs as they appear and re-test until all tests pass.
+5. Generate testFinal.json that is a large JSON file with all expected passing features and run the tool against it to ensure it can handle larger files/output the corrrectly formatted version.
