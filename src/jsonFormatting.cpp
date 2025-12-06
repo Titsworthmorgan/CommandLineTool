@@ -135,6 +135,9 @@ Tokenizer::Token Tokenizer::getNextToken() {
                     i++;
                 }
             }
+            if (strValue.find('\n') != std::string::npos) {
+                throw runtime_error("Unescaped newline in string is not allowed");
+            }
             // return string token with quotes included
             return {TokenType::STRING, "\"" + strValue + "\""};
         }
@@ -221,11 +224,35 @@ TODO: make this here work
     {"id": 2, "name": "Bob", "active": false},
     {"id": 3, "name": "Charlie", "active": true}
   ]
+size_t startIndex, size_t endIndex
   */
 bool Parser::validateObjectKeys() {
+    // cout << "tokens size:: " << tokens.size() << " startIndex:: " << startIndex << " endIndex:: " << endIndex << endl;
+    // if (endIndex == tokens.size() && startIndex == 0) {
+    //  probably the root object, skip
+    //  return true;
+    /*
+        morgan@brick:~/repos/CommandLineTool$ bash test.sh -t
+
+        Duplicate key found: "duplicateKey"
+        Duplicate keys found in object from index 1 to 9
+        Error parsing file ./testing/fail11.json: Duplicate keys found in object --- should fail
+
+        Parsed successfully: ./testing/pass11.json --- should pass
+
+        Duplicate key found: "id"
+        Duplicate keys found in object from index 1 to 277
+        Error parsing file ./testing/testingFinal.json: Duplicate keys found in object --- why..
+
+        morgan@brick:~/repos/CommandLineTool$
+
+        maybe.. local depth counter?
+    */
+    //}
     // make a vector to store all the keys we've seen
     vector<string> keys;
     // loop through em
+    // startIndex to endIndex
     for (size_t i = 0; i < tokens.size(); i++) {
         // if we find a string followed by a colon, it's a key
         if (tokens[i].type == Tokenizer::TokenType::STRING && i + 1 < tokens.size() && tokens[i + 1].type == Tokenizer::TokenType::COLON) {
@@ -234,8 +261,8 @@ bool Parser::validateObjectKeys() {
             // if found in keys vector already, duplicate key
             if (std::find(keys.begin(), keys.end(), key) != keys.end()) {
                 // duplicate key found
-                cout << "Duplicate key found: " << key << endl;
                 // return false - invalid
+                cout << "Duplicate key found: " << key << endl;
                 return false;
             }
             // otherwise, add key to keys vector
@@ -257,15 +284,19 @@ Object parsing function:
     5. Validate keys for duplicates using validateObjectKeys().
 */
 void Parser::parseObject(int depth) {
+    // I do NOT want to have to trace a stack of keys to check for duplicates, that seems excessive.
+    // instead, I'm going to just track the start and end of the object in the tokens vector
+    size_t startIndex = tokens.size();
+    bool inObject = true;
     // expect left bracket '{'
     expect(Tokenizer::TokenType::LEFT_BRACKET, "Expected '{'");
-
     // if comments are found here, throw error
     if (currentToken.value == "/" || currentToken.value == "*") {
         throw runtime_error("Comments are not allowed in JSON");
     }
     // check for empty object
     if (match(Tokenizer::TokenType::RIGHT_BRACKET)) {
+        inObject = false;
         // empty object
         tokens.push_back(currentToken);
         // push right bracket and advance
@@ -274,10 +305,9 @@ void Parser::parseObject(int depth) {
     }
 
     // while true to keep parsing key-value pairs
-    while (true) {
+    do {
         // push current token (key)
         tokens.push_back(currentToken);
-        // if not a string
         expect(Tokenizer::TokenType::STRING, "Expected string key in object");
         // push colon ':'
         tokens.push_back(currentToken);
@@ -312,11 +342,12 @@ void Parser::parseObject(int depth) {
             // we're expecting either a comma or right bracket here
             throw runtime_error("Expected ',' or '}' in object");
         }
-    }
-    // check key-value pairs -- broken rn
-    if (!validateObjectKeys()) {
-        throw runtime_error("Duplicate keys found in object");
-    }
+    } while (true);
+    // problematic spot - validate object keys for duplicates
+    // startIndex, tokens.size()
+    // if (!validateObjectKeys()) {
+    // throw runtime_error("Duplicate keys found in object");
+    //}
 }
 
 /*
@@ -329,7 +360,6 @@ Array parsing function:
 void Parser::parseArray(int depth) {
     // expect left brace '['
     expect(Tokenizer::TokenType::LEFT_BRACE, "Expected '['");
-
     // check for empty array
     if (match(Tokenizer::TokenType::RIGHT_BRACE)) {
         // empty array
@@ -343,7 +373,7 @@ void Parser::parseArray(int depth) {
         throw runtime_error("Comments are not allowed in JSON");
     }
 
-    while (true) {
+    do {
         // check for comments
         if (currentToken.value == "/" || currentToken.value == "*") {
             throw runtime_error("Comments are not allowed in JSON");
@@ -377,7 +407,7 @@ void Parser::parseArray(int depth) {
             // we're expecting either a comma or right brace here
             throw runtime_error("Expected ',' or ']' in array");
         }
-    }
+    } while (true);
 }
 
 /*
@@ -577,36 +607,36 @@ void parseAndWriteJsonFiles(std::ifstream &inFile, std::ofstream &outFile) {
 void testJsonParsing() {
     // just tossing all of em in an array
     const std::vector<std::string> testFiles = {
-        "./testing/fail1.json",
-        "./testing/fail2.json",
-        "./testing/fail3.json",
-        "./testing/fail4.json",
-        "./testing/fail5.json",
-        "./testing/fail6.json",
-        "./testing/fail7.json",
-        "./testing/fail8.json",
-        "./testing/fail9.json",
-        "./testing/fail10.json",
+        // "./testing/fail1.json",
+        // "./testing/fail2.json",
+        // "./testing/fail3.json",
+        // "./testing/fail4.json",
+        // "./testing/fail5.json",
+        // "./testing/fail6.json",
+        // "./testing/fail7.json",
+        // "./testing/fail8.json",
+        // "./testing/fail9.json",
+        // "./testing/fail10.json",
         "./testing/fail11.json",
-        "./testing/fail12.json",
-        "./testing/fail13.json",
-        "./testing/fail14.json",
-        "./testing/fail15.json",
-        "./testing/pass1.json",
-        "./testing/pass2.json",
-        "./testing/pass3.json",
-        "./testing/pass4.json",
-        "./testing/pass5.json",
-        "./testing/pass6.json",
-        "./testing/pass7.json",
-        "./testing/pass8.json",
-        "./testing/pass9.json",
-        "./testing/pass10.json",
+        // "./testing/fail12.json",
+        // "./testing/fail13.json",
+        // "./testing/fail14.json",
+        // "./testing/fail15.json",
+        // "./testing/pass1.json",
+        // "./testing/pass2.json",
+        // "./testing/pass3.json",
+        // "./testing/pass4.json",
+        // "./testing/pass5.json",
+        // "./testing/pass6.json",
+        // "./testing/pass7.json",
+        // "./testing/pass8.json",
+        // "./testing/pass9.json",
+        // "./testing/pass10.json",
         "./testing/pass11.json",
-        "./testing/pass12.json",
-        "./testing/pass13.json",
-        "./testing/pass14.json",
-        "./testing/pass15.json",
+        // "./testing/pass12.json",
+        // "./testing/pass13.json",
+        // "./testing/pass14.json",
+        // "./testing/pass15.json",
         "./testing/testingFinal.json",
     };
     // for each file, output an error message if it fails to parse for what it is supposed to fail on

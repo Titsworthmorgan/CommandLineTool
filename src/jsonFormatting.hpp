@@ -100,6 +100,7 @@ class Parser {
     // parse an array
     void parseArray(int depth);
     // validate object keys for duplicates
+    // size_t startIndex, size_t endIndex
     bool validateObjectKeys();
 
   public:
